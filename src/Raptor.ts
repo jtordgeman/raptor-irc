@@ -12,7 +12,7 @@ export class Raptor extends EventEmitter {
     socket: tls.TLSSocket | net.Socket | null = null;
     socketManager: SocketManager | null = null;
     //parser: Parser;
-    constructor(public options: RaptorOptions) {
+    constructor(public options?: RaptorOptions) {
         super();
         //this.parser = new Parser();
     }

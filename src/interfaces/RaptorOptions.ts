@@ -1,4 +1,6 @@
-export interface RaptorOptions {}
+export interface RaptorOptions {
+    debug?:boolean;
+}
 
 export interface RaptorConnectionOptions {
     host: string;
