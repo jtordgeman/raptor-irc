@@ -2,13 +2,16 @@ import { EventEmitter } from "events";
 import tls from "tls";
 import net from "net";
 import { RaptorConnectionOptions } from "../interfaces/RaptorOptions";
+import ircReplies from "irc-replies";
 
 export class SocketManager extends EventEmitter {
     socket: tls.TLSSocket | net.Socket | null = null;
     socketConnectEvent: string = "connect";
     socketError: string = "";
+    private replies: { [key: string]: string };
     constructor() {
         super();
+        this.replies = ircReplies;
     }
 
     private onSocketConnected = (): void => {
@@ -29,7 +32,29 @@ export class SocketManager extends EventEmitter {
     };
 
     private onSocketData = (data: Buffer): void => {
-        console.log(`data is ${data}`);
+        data.toString()
+            .split("\r\n")
+            .filter((l: string) => l !== "")
+            .forEach((l: string) => {
+                const trimmed: string = l.trim();
+                const messageArray: string[] = trimmed.split(" ");
+                let prefix: string = "";
+                let command: string = "";
+                let params: string = "";
+
+                if (messageArray[0].startsWith(":")) {
+                    prefix = messageArray.splice(0, 1)[0].trim();
+                }
+
+                command = messageArray.splice(0, 1)[0].trim();
+                const parsedCommand = this.replies[command] || command;
+                params = messageArray.join(" ").trim();
+                this.emit("message", {
+                    prefix,
+                    command: parsedCommand,
+                    params,
+                });
+            });
     };
 
     private closeSocket = (): void => {

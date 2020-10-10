@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import { RaptorConnectionOptions } from "./interfaces/RaptorOptions";
+import { MessageObject } from "./interfaces/Message";
 import { SocketManager } from "./modules/SocketManager";
 
 export class Raptor extends EventEmitter {
@@ -8,7 +9,7 @@ export class Raptor extends EventEmitter {
         super();
         this.socketManager = new SocketManager();
     }
-    private register = (): void => {
+    private registerWithServer = (): void => {
         if (this.options.pass) {
             this.socketManager.write(`PASS ${this.options.pass}`);
         }
@@ -20,10 +21,15 @@ export class Raptor extends EventEmitter {
         );
     };
 
+    private handleMessage = (message: MessageObject): void => {
+        console.log(message.command);
+    };
+
     connect(): void {
         this.socketManager.connect(this.options);
 
         // register events
-        this.socketManager.on("socketOpen", this.register);
+        this.socketManager.on("socketOpen", this.registerWithServer);
+        this.socketManager.on("message", this.handleMessage);
     }
 }
