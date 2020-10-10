@@ -1,36 +1,29 @@
-import tls from "tls";
-import net from "net";
 import { EventEmitter } from "events";
-import {
-    RaptorOptions,
-    RaptorConnectionOptions,
-} from "./interfaces/RaptorOptions";
-import { Parser } from "./modules/Parser";
-import { SocketManager} from "./modules/SocketManager";
+import { RaptorConnectionOptions } from "./interfaces/RaptorOptions";
+import { SocketManager } from "./modules/SocketManager";
 
 export class Raptor extends EventEmitter {
-    socket: tls.TLSSocket | net.Socket | null = null;
-    socketManager: SocketManager | null = null;
-    //parser: Parser;
-    constructor(public options?: RaptorOptions) {
+    private socketManager: SocketManager;
+    constructor(private options: RaptorConnectionOptions) {
         super();
-        //this.parser = new Parser();
+        this.socketManager = new SocketManager();
     }
-    connect(options: RaptorConnectionOptions) {
-        this.socketManager = new SocketManager(options);
-        this.socketManager.connect();
-        //if (options.ssl) {
-        //    const creds = { rejectUnauthorized: !options.selfSigned };
-        //    this.socket = tls.connect(options.port, options.host, creds);
-        //} else {
-        //    this.socket = net.connect(options.port, options.host);
-        //}
-        //this.socket.setEncoding("utf8");
+    private register = (): void => {
+        if (this.options.pass) {
+            this.socketManager.write(`PASS ${this.options.pass}`);
+        }
+        this.socketManager.write(`NICK ${this.options.nick}`);
+        this.socketManager.write(
+            `USER ${this.options.user} 0 * :${
+                this.options.realName || this.options.nick
+            }`
+        );
+    };
+
+    connect(): void {
+        this.socketManager.connect(this.options);
+
         // register events
-        //this.socket.on("data", (d) => {
-        //    console.log(typeof d);
-        //    console.log(`d is: ${d}`);
-        //});
-        //this.socket.pipe(this.parser);
+        this.socketManager.on("socketOpen", this.register);
     }
 }
