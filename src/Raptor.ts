@@ -2,12 +2,15 @@ import { EventEmitter } from "events";
 import { RaptorConnectionOptions } from "./interfaces/RaptorOptions";
 import { MessageObject } from "./interfaces/Message";
 import { SocketManager } from "./modules/SocketManager";
+import { PluginManager } from "./modules/PluginManager";
 
 export class Raptor extends EventEmitter {
     private socketManager: SocketManager;
+    private pluginManager: PluginManager;
     constructor(private options: RaptorConnectionOptions) {
         super();
         this.socketManager = new SocketManager();
+        this.pluginManager = new PluginManager(this);
     }
     private registerWithServer = (): void => {
         if (this.options.pass) {
@@ -23,6 +26,7 @@ export class Raptor extends EventEmitter {
 
     private handleMessage = (message: MessageObject): void => {
         console.log(message.command);
+        this.emit("message", message);
     };
 
     connect(): void {

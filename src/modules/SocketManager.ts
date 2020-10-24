@@ -40,15 +40,17 @@ export class SocketManager extends EventEmitter {
                 const messageArray: string[] = trimmed.split(" ");
                 let prefix: string = "";
                 let command: string = "";
-                let params: string = "";
+                let params:string[] = [];
+
 
                 if (messageArray[0].startsWith(":")) {
-                    prefix = messageArray.splice(0, 1)[0].trim();
+                    prefix = messageArray.splice(0, 1)[0].trim().substring(1);
                 }
 
                 command = messageArray.splice(0, 1)[0].trim();
                 const parsedCommand = this.replies[command] || command;
-                params = messageArray.join(" ").trim();
+                //params = messageArray.join(" ").trim();
+                params = messageArray;
                 this.emit("message", {
                     prefix,
                     command: parsedCommand,
