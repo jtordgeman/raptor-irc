@@ -1,3 +1,5 @@
+import { Raptor } from "../Raptor";
 
-export interface Plugin {
+export abstract class Plugin {
+    constructor(public raptor: Raptor) {}
 }

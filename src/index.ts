@@ -8,6 +8,6 @@ const raptor = new Raptor({
 });
 
 raptor.connect();
-raptor.on('welcome', (data) => {
+raptor.on("welcome", (data) => {
     console.log(`welcome got: ${data}`);
-})
+});
