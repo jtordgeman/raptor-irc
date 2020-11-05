@@ -1,6 +1,6 @@
 import { Plugin } from "../interfaces/Plugin";
-import { Raptor } from "../Raptor";
 import requireDir from "require-dir";
+import { EventManager } from "./EventManager";
 const pluginObjects = requireDir("../plugins");
 
 interface Plugins {
@@ -9,9 +9,10 @@ interface Plugins {
 
 export class PluginManager {
     plugins = {} as Plugins;
-    constructor(private raptor: Raptor) {
+    constructor(private eventManager: EventManager) {
         Object.entries(pluginObjects).forEach(
-            ([name, plugin]) => (this.plugins[name] = new plugin(this.raptor))
+            ([name, plugin]) =>
+                (this.plugins[name] = new plugin(this.eventManager))
         );
     }
 }

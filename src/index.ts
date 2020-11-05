@@ -7,7 +7,13 @@ const raptor = new Raptor({
     user: "Raptor",
 });
 
-raptor.connect();
+//raptor.connect();
 raptor.on("welcome", (data) => {
     console.log(`welcome got: ${data}`);
 });
+
+raptor.on("message", (data) => {
+    console.log(data);
+});
+
+raptor.connect();

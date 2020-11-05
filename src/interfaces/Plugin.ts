@@ -1,5 +1,5 @@
-import { Raptor } from "../Raptor";
+import { EventManager } from "../modules/EventManager";
 
 export abstract class Plugin {
-    constructor(public raptor: Raptor) {}
+    constructor(public eventManager: EventManager) {}
 }

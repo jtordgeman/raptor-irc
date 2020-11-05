@@ -1,15 +1,16 @@
 import { Plugin } from "../interfaces/Plugin";
-import { Raptor } from "../Raptor";
+import { EventManager } from "../modules/EventManager";
 
 class Welcome extends Plugin {
-    constructor(raptor: Raptor) {
-        super(raptor);
-        this.raptor.on("message", (data) => {
+    constructor(eventManager: EventManager) {
+        super(eventManager);
+        this.eventManager.on("message", (data) => {
+            console.log("data", data.command);
             if (data.command !== "RPL_WELCOME") {
                 return;
             }
 
-            this.raptor.emit("welcome", data.params[0]);
+            this.eventManager.emit("welcome", data.params[0]);
         });
     }
 }

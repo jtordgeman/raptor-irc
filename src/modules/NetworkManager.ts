@@ -1,25 +1,26 @@
-import { EventEmitter } from "events";
 import tls from "tls";
 import net from "net";
 import { RaptorConnectionOptions } from "../interfaces/RaptorOptions";
 import ircReplies from "irc-replies";
+import { EventManager } from "./EventManager";
 
-export class SocketManager extends EventEmitter {
+export class NetworkManager {
     socket: tls.TLSSocket | net.Socket | null = null;
     socketConnectEvent: string = "connect";
     socketError: string = "";
+    eventManager: EventManager;
     private replies: { [key: string]: string };
-    constructor() {
-        super();
+    constructor(eventManager: EventManager) {
         this.replies = ircReplies;
+        this.eventManager = eventManager;
     }
 
     private onSocketConnected = (): void => {
-        this.emit("socketOpen");
+        this.eventManager.emit("socketOpen");
     };
 
     private onSocketClose = (): void => {
-        this.emit("socketClose", this.socketError);
+        this.eventManager.emit("socketClose", this.socketError);
     };
 
     private onSocketError = (err: Error): void => {
@@ -50,7 +51,7 @@ export class SocketManager extends EventEmitter {
                 const parsedCommand = this.replies[command] || command;
                 //params = messageArray.join(" ").trim();
                 params = messageArray;
-                this.emit("message", {
+                this.eventManager.emit("message", {
                     prefix,
                     command: parsedCommand,
                     params,
