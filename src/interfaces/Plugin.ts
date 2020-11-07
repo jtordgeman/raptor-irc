@@ -1,5 +1,5 @@
-import { EventManager } from "../modules/EventManager";
+import { EventEmitter } from "events";
 
 export abstract class Plugin {
-    constructor(public eventManager: EventManager) {}
+    constructor(public eventEmitter: EventEmitter) {}
 }

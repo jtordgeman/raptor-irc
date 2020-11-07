@@ -2,25 +2,25 @@ import tls from "tls";
 import net from "net";
 import { RaptorConnectionOptions } from "../interfaces/RaptorOptions";
 import ircReplies from "irc-replies";
-import { EventManager } from "./EventManager";
+import { EventEmitter } from "events";
 
 export class NetworkManager {
     socket: tls.TLSSocket | net.Socket | null = null;
     socketConnectEvent: string = "connect";
     socketError: string = "";
-    eventManager: EventManager;
+    eventEmitter: EventEmitter;
     private replies: { [key: string]: string };
-    constructor(eventManager: EventManager) {
+    constructor(eventEmitter: EventEmitter) {
         this.replies = ircReplies;
-        this.eventManager = eventManager;
+        this.eventEmitter = eventEmitter;
     }
 
     private onSocketConnected = (): void => {
-        this.eventManager.emit("socketOpen");
+        this.eventEmitter.emit("socketOpen");
     };
 
     private onSocketClose = (): void => {
-        this.eventManager.emit("socketClose", this.socketError);
+        this.eventEmitter.emit("socketClose", this.socketError);
     };
 
     private onSocketError = (err: Error): void => {
@@ -38,6 +38,7 @@ export class NetworkManager {
             .filter((l: string) => l !== "")
             .forEach((l: string) => {
                 const trimmed: string = l.trim();
+                console.log("t", trimmed);
                 const messageArray: string[] = trimmed.split(" ");
                 let prefix: string = "";
                 let command: string = "";
@@ -49,9 +50,13 @@ export class NetworkManager {
 
                 command = messageArray.splice(0, 1)[0].trim();
                 const parsedCommand = this.replies[command] || command;
-                //params = messageArray.join(" ").trim();
-                params = messageArray;
-                this.eventManager.emit("message", {
+                const paramMessaageIndex = messageArray.findIndex((m) =>
+                    m.startsWith(":")
+                );
+                params = messageArray.slice(0,paramMessaageIndex);
+                params.push(messageArray.splice(paramMessaageIndex).join(" ").substring(1));
+
+                this.eventEmitter.emit("message", {
                     prefix,
                     command: parsedCommand,
                     params,

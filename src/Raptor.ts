@@ -1,26 +1,25 @@
 import { RaptorConnectionOptions } from "./interfaces/RaptorOptions";
-import { MessageObject } from "./interfaces/Message";
 import { NetworkManager } from "./modules/NetworkManager";
 import { PluginManager } from "./modules/PluginManager";
-import { EventManager } from "./modules/EventManager";
+import { EventEmitter } from "events";
+
+type Callback = (...args: any[]) => void;
 
 export class Raptor {
     private networkManager: NetworkManager;
     private pluginManager: PluginManager;
-    private eventManager: EventManager;
+    private eventManager: EventEmitter;
     constructor(private options: RaptorConnectionOptions) {
-        this.eventManager = new EventManager();
+        this.eventManager = new EventEmitter();
         this.pluginManager = new PluginManager(this.eventManager);
         this.networkManager = new NetworkManager(this.eventManager);
     }
 
-    get on() {
-        console.log("reached on!");
-        return this.eventManager.on;
+    on(eventName: string, callback: Callback): void {
+        this.eventManager.on(eventName, callback);
     }
 
     private registerWithServer = (): void => {
-        console.log("reached registerWithServer");
         if (this.options.pass) {
             this.networkManager.write(`PASS ${this.options.pass}`);
         }
@@ -37,7 +36,9 @@ export class Raptor {
 
         // register events
         this.eventManager.on("socketOpen", this.registerWithServer);
-        //this.eventManager.on("welcome", () => console.log("got welcome"));
-        //this.eventManager.on("message", (d) => console.log(d));
+    }
+
+    write(line: string): void {
+        this.networkManager.write(line);
     }
 }

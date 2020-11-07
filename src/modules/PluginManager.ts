@@ -1,6 +1,7 @@
 import { Plugin } from "../interfaces/Plugin";
 import requireDir from "require-dir";
-import { EventManager } from "./EventManager";
+import { EventEmitter } from "events";
+
 const pluginObjects = requireDir("../plugins");
 
 interface Plugins {
@@ -9,10 +10,10 @@ interface Plugins {
 
 export class PluginManager {
     plugins = {} as Plugins;
-    constructor(private eventManager: EventManager) {
+    constructor(private eventEmitter: EventEmitter) {
         Object.entries(pluginObjects).forEach(
             ([name, plugin]) =>
-                (this.plugins[name] = new plugin(this.eventManager))
+                (this.plugins[name] = new plugin(this.eventEmitter))
         );
     }
 }

@@ -2,17 +2,22 @@ import { Plugin } from "../interfaces/Plugin";
 import { EventEmitter } from "events";
 import { MessageObject } from "../interfaces/Message";
 
-class Welcome extends Plugin {
+class Notice extends Plugin {
     constructor(eventEmitter: EventEmitter) {
         super(eventEmitter);
         this.eventEmitter.on("message", (data: MessageObject) => {
-            if (data.command !== "RPL_WELCOME") {
+            if (data.command !== "NOTICE") {
                 return;
             }
 
-            this.eventEmitter.emit("welcome", data.params[0]);
+            console.log("n", data);
+
+            //this.eventEmitter.emit("away", {
+            //    nick: data.params[1],
+            //    message: data.params[2],
+            //});
         });
     }
 }
 
-export = Welcome;
+export = Notice;
