@@ -53,8 +53,13 @@ export class NetworkManager {
                 const paramMessaageIndex = messageArray.findIndex((m) =>
                     m.startsWith(":")
                 );
-                params = messageArray.slice(0,paramMessaageIndex);
-                params.push(messageArray.splice(paramMessaageIndex).join(" ").substring(1));
+                params = messageArray.slice(0, paramMessaageIndex);
+                params.push(
+                    messageArray
+                        .splice(paramMessaageIndex)
+                        .join(" ")
+                        .substring(1)
+                );
 
                 this.eventEmitter.emit("message", {
                     prefix,

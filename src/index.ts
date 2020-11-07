@@ -18,6 +18,6 @@ raptor.on("away", (data: AwayReply) => {
 
 raptor.on("message", (data) => {
     //console.log("msg",data);
-})
+});
 
 raptor.connect();
