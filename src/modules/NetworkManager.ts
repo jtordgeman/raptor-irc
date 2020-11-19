@@ -3,14 +3,14 @@ import net from "net";
 import { RaptorConnectionOptions } from "../interfaces/RaptorOptions";
 import ircReplies from "irc-replies";
 import { EventEmitter } from "events";
+import Debug from "debug";
 
 export class NetworkManager {
     socket: tls.TLSSocket | net.Socket | null = null;
-    socketConnectEvent: string = "connect";
     socketError: string = "";
     eventEmitter: EventEmitter;
     private replies: { [key: string]: string };
-    constructor(eventEmitter: EventEmitter) {
+    constructor(eventEmitter: EventEmitter, private debug: Debug.Debugger) {
         this.replies = ircReplies;
         this.eventEmitter = eventEmitter;
     }
@@ -28,7 +28,7 @@ export class NetworkManager {
     };
 
     private onSocketTimeout = (): void => {
-        console.log("timeout");
+        this.debug("timeout");
         this.closeSocket();
     };
 
@@ -37,44 +37,50 @@ export class NetworkManager {
             .split("\r\n")
             .filter((l: string) => l !== "")
             .forEach((l: string) => {
+                this.debug(`l is: ${l}`);
                 const trimmed: string = l.trim();
-                console.log("t", trimmed);
                 const messageArray: string[] = trimmed.split(" ");
-                let prefix: string = "";
-                let command: string = "";
-                let params: string[] = [];
+                if (messageArray.length >= 2) {
+                    let prefix: string = "";
+                    let command: string = "";
+                    let params: string[] = [];
 
-                if (messageArray[0].startsWith(":")) {
-                    prefix = messageArray.splice(0, 1)[0].trim().substring(1);
+                    if (messageArray[0].startsWith(":")) {
+                        prefix = messageArray
+                            .splice(0, 1)[0]
+                            .trim()
+                            .substring(1);
+                    }
+
+                    command = messageArray.splice(0, 1)[0].trim();
+                    const parsedCommand = this.replies[command] || command;
+                    const paramMessaageIndex = messageArray.findIndex((m) =>
+                        m.startsWith(":")
+                    );
+                    params = messageArray.slice(0, paramMessaageIndex);
+                    params.push(
+                        messageArray
+                            .splice(paramMessaageIndex)
+                            .join(" ")
+                            .substring(1)
+                    );
+
+                    this.eventEmitter.emit("message", {
+                        prefix,
+                        command: parsedCommand,
+                        params,
+                    });
                 }
-
-                command = messageArray.splice(0, 1)[0].trim();
-                const parsedCommand = this.replies[command] || command;
-                const paramMessaageIndex = messageArray.findIndex((m) =>
-                    m.startsWith(":")
-                );
-                params = messageArray.slice(0, paramMessaageIndex);
-                params.push(
-                    messageArray
-                        .splice(paramMessaageIndex)
-                        .join(" ")
-                        .substring(1)
-                );
-
-                this.eventEmitter.emit("message", {
-                    prefix,
-                    command: parsedCommand,
-                    params,
-                });
             });
     };
 
     private closeSocket = (): void => {
         if (!this.socket) {
-            console.log("No socket found");
+            this.debug("No socket found");
             return;
         }
         this.socket.end();
+        this.socket = null;
     };
 
     connect(options: RaptorConnectionOptions): void {
@@ -97,7 +103,7 @@ export class NetworkManager {
 
     write(line: string): void {
         if (!this.socket) {
-            console.log("Socket is not connected");
+            this.debug("Socket is not connected");
             return;
         }
         this.socket.write(`${line}\r\n`);

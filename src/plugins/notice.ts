@@ -12,9 +12,9 @@ class Notice extends Plugin {
 
             console.log("n", data);
 
-            //this.eventEmitter.emit("away", {
-            //    nick: data.params[1],
-            //    message: data.params[2],
+            //this.eventEmitter.emit("notice", {
+            //    nick: data.prefix.split("!")[0],
+            //    message: data.params.join(" ")
             //});
         });
     }

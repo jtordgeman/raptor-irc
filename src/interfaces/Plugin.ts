@@ -1,3 +1,4 @@
+import Debug from "debug";
 import { EventEmitter } from "events";
 
 export abstract class Plugin {
