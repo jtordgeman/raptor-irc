@@ -10,12 +10,17 @@ class Notice extends Plugin {
                 return;
             }
 
-            console.log("n", data);
+            let [to, message] = ["",""];
+            if (data.params.length >=2) {
+                to = data.params[0];
+                message = data.params[1];
+            }
 
-            //this.eventEmitter.emit("notice", {
-            //    nick: data.prefix.split("!")[0],
-            //    message: data.params.join(" ")
-            //});
+            this.eventEmitter.emit("notice", {
+                from: data.prefix.split("!")[0],
+                to,
+                message
+            });
         });
     }
 }

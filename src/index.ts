@@ -10,6 +10,7 @@ const raptor = new Raptor({
 
 raptor.on("welcome", (data) => {
     console.log(`welcome got: ${data}`);
+    raptor.write("JOIN #badbotsfuntime funtimes")
 });
 
 raptor.on("away", (data: AwayReply) => {
@@ -19,5 +20,9 @@ raptor.on("away", (data: AwayReply) => {
 raptor.on("message", (data) => {
     //console.log("msg",data);
 });
+
+raptor.on("notice", (data) => {
+    console.log("notice", data);
+})
 
 raptor.connect();
