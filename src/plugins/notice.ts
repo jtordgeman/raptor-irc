@@ -10,8 +10,8 @@ class Notice extends Plugin {
                 return;
             }
 
-            let [to, message] = ["",""];
-            if (data.params.length >=2) {
+            let [to, message] = ["", ""];
+            if (data.params.length >= 2) {
                 to = data.params[0];
                 message = data.params[1];
             }
@@ -19,7 +19,7 @@ class Notice extends Plugin {
             this.eventEmitter.emit("notice", {
                 from: data.prefix.split("!")[0],
                 to,
-                message
+                message,
             });
         });
     }

@@ -2,7 +2,8 @@ import { Raptor } from "./Raptor";
 import { AwayReply } from "./interfaces/Replies";
 
 const raptor = new Raptor({
-    host: "irc.inet.tele.dk",
+    //host: "irc.inet.tele.dk",
+    host: "irc.efnet.nl",
     port: 6667,
     nick: "Raptorr222",
     user: "Raptor",
@@ -10,7 +11,7 @@ const raptor = new Raptor({
 
 raptor.on("welcome", (data) => {
     console.log(`welcome got: ${data}`);
-    raptor.write("JOIN #badbotsfuntime funtimes")
+    raptor.write("JOIN #badbotsfuntime funtimes");
 });
 
 raptor.on("away", (data: AwayReply) => {
@@ -23,6 +24,6 @@ raptor.on("message", (data) => {
 
 raptor.on("notice", (data) => {
     console.log("notice", data);
-})
+});
 
 raptor.connect();

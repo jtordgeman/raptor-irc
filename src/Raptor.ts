@@ -21,11 +21,17 @@ export class Raptor {
 
         // register to events
         this.registerWithServer = this.registerWithServer.bind(this);
+        this.handlePing = this.handlePing.bind(this);
         this.eventManager.on("socketOpen", this.registerWithServer);
+        this.eventManager.on("ping", this.handlePing);
     }
 
     on(eventName: string, callback: Callback): void {
         this.eventManager.on(eventName, callback);
+    }
+
+    private handlePing(data: string): void {
+        this.write(`PONG :${data}`);
     }
 
     registerWithServer(): void {
