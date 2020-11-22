@@ -12,12 +12,11 @@ export class Raptor {
     private eventManager: EventEmitter;
     private debug: Debug.Debugger;
     constructor(private options: RaptorConnectionOptions) {
-        Debug.enable("Raptor");
         this.debug = Debug("Raptor");
 
         this.eventManager = new EventEmitter();
-        this.pluginManager = new PluginManager(this.eventManager, this.debug);
-        this.networkManager = new NetworkManager(this.eventManager, this.debug);
+        this.pluginManager = new PluginManager(this.eventManager);
+        this.networkManager = new NetworkManager(this.eventManager);
 
         // register to events
         this.registerWithServer = this.registerWithServer.bind(this);
@@ -31,6 +30,7 @@ export class Raptor {
     }
 
     private handlePing(data: string): void {
+        this.debug("yay pong");
         this.write(`PONG :${data}`);
     }
 

@@ -9,10 +9,12 @@ export class NetworkManager {
     socket: tls.TLSSocket | net.Socket | null = null;
     socketError: string = "";
     eventEmitter: EventEmitter;
+    debug: Debug.Debugger;
     private replies: { [key: string]: string };
-    constructor(eventEmitter: EventEmitter, private debug: Debug.Debugger) {
+    constructor(eventEmitter: EventEmitter) {
         this.replies = ircReplies;
         this.eventEmitter = eventEmitter;
+        this.debug = Debug("Raptor").extend("Network");
     }
 
     private onSocketConnected = (): void => {
