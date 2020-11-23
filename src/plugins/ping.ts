@@ -10,8 +10,6 @@ class Ping extends Plugin {
                 return;
             }
 
-            console.log("p", data);
-
             if (data.command === "PONG") {
                 this.eventEmitter.emit("pong", data.params[0]);
             }

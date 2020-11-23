@@ -10,9 +10,7 @@ interface Plugins {
 
 export class PluginManager {
     plugins = {} as Plugins;
-    constructor(
-        private eventEmitter: EventEmitter
-    ) {
+    constructor(private eventEmitter: EventEmitter) {
         Object.entries(pluginObjects).forEach(
             ([name, plugin]) =>
                 (this.plugins[name] = new plugin(this.eventEmitter))

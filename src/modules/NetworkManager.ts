@@ -4,6 +4,7 @@ import { RaptorConnectionOptions } from "../interfaces/RaptorOptions";
 import ircReplies from "irc-replies";
 import { EventEmitter } from "events";
 import Debug from "debug";
+import { MessageObject } from "../interfaces/Message";
 
 export class NetworkManager {
     socket: tls.TLSSocket | net.Socket | null = null;
@@ -15,6 +16,34 @@ export class NetworkManager {
         this.replies = ircReplies;
         this.eventEmitter = eventEmitter;
         this.debug = Debug("Raptor:Network");
+    }
+
+    private handleLine(line: string): MessageObject | null {
+        this.debug(`Received line: ${line}`);
+        let prefix: string = "";
+        let params: string[] = [];
+
+        const messageArray: string[] = line.split(" ");
+        if (messageArray.length >= 2) {
+            if (messageArray[0].startsWith(":")) {
+                prefix = messageArray.splice(0, 1)[0].trim().substring(1);
+            }
+            const command = messageArray.splice(0, 1)[0].trim();
+            const parsedCommand = this.replies[command] || command;
+            const paramMessaageIndex = messageArray.findIndex((m) =>
+                m.startsWith(":")
+            );
+            params = messageArray.slice(0, paramMessaageIndex);
+            params.push(
+                messageArray.splice(paramMessaageIndex).join(" ").substring(1)
+            );
+            return {
+                prefix,
+                command: parsedCommand,
+                params,
+            };
+        }
+        return null;
     }
 
     private onSocketConnected = (): void => {
@@ -39,39 +68,10 @@ export class NetworkManager {
             .split("\r\n")
             .filter((l: string) => l !== "")
             .forEach((l: string) => {
-                this.debug(`l is: ${l}`);
                 const trimmed: string = l.trim();
-                const messageArray: string[] = trimmed.split(" ");
-                if (messageArray.length >= 2) {
-                    let prefix: string = "";
-                    let command: string = "";
-                    let params: string[] = [];
-
-                    if (messageArray[0].startsWith(":")) {
-                        prefix = messageArray
-                            .splice(0, 1)[0]
-                            .trim()
-                            .substring(1);
-                    }
-
-                    command = messageArray.splice(0, 1)[0].trim();
-                    const parsedCommand = this.replies[command] || command;
-                    const paramMessaageIndex = messageArray.findIndex((m) =>
-                        m.startsWith(":")
-                    );
-                    params = messageArray.slice(0, paramMessaageIndex);
-                    params.push(
-                        messageArray
-                            .splice(paramMessaageIndex)
-                            .join(" ")
-                            .substring(1)
-                    );
-
-                    this.eventEmitter.emit("message", {
-                        prefix,
-                        command: parsedCommand,
-                        params,
-                    });
+                const messageObject = this.handleLine(trimmed);
+                if (messageObject) {
+                    this.eventEmitter.emit("message", messageObject);
                 }
             });
     };
