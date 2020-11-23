@@ -30,7 +30,6 @@ export class Raptor {
     }
 
     private handlePing(data: string): void {
-        this.debug("yay pong");
         this.write(`PONG :${data}`);
     }
 

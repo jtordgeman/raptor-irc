@@ -14,7 +14,7 @@ export class NetworkManager {
     constructor(eventEmitter: EventEmitter) {
         this.replies = ircReplies;
         this.eventEmitter = eventEmitter;
-        this.debug = Debug("Raptor").extend("Network");
+        this.debug = Debug("Raptor:Network");
     }
 
     private onSocketConnected = (): void => {
