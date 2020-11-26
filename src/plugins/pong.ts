@@ -1,15 +1,15 @@
 import { Plugin, IPluginManager } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
 
-class Ping implements Plugin {
+class Pong implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.addPlugin("PING", this.onCommand);
+        pluginManager.addPlugin("PONG", this.onCommand);
     }
 
     onCommand = (data: MessageObject): void => {
-        this.pluginManager.emit("ping", { payload: data.params[0] });
+        this.pluginManager.emit("pong", { payload: data.params[0] });
         data.handled = true;
     }
 }
 
-export = Ping;
+export = Pong;

@@ -29,8 +29,8 @@ export class Raptor {
         this.eventManager.on(eventName, callback);
     }
 
-    private handlePing(data: string): void {
-        this.write(`PONG :${data}`);
+    private handlePing(data: any): void {
+        this.write(`PONG :${data.payload}`);
     }
 
     registerWithServer(): void {

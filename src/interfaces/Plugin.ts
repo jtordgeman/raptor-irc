@@ -1,6 +1,10 @@
-import Debug from "debug";
-import { EventEmitter } from "events";
+type Callback = (...args: any[]) => void;
 
-export abstract class Plugin {
-    constructor(public eventEmitter: EventEmitter) {}
+export interface Plugin {
+    pluginManager: IPluginManager;
+}
+
+export interface IPluginManager {
+    addPlugin(command: string, callback: Callback): void;
+    emit(eventName: string, payload: object): void;
 }

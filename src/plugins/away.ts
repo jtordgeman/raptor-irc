@@ -1,20 +1,18 @@
-import { Plugin } from "../interfaces/Plugin";
-import { EventEmitter } from "events";
+import { Plugin, IPluginManager } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
 
-class Away extends Plugin {
-    constructor(eventEmitter: EventEmitter) {
-        super(eventEmitter);
-        this.eventEmitter.on("message", (data: MessageObject) => {
-            if (data.command !== "RPL_AWAY") {
-                return;
-            }
+class Away implements Plugin {
+    constructor(public pluginManager: IPluginManager) {
+        pluginManager.addPlugin("RPL_AWAY", this.onCommand);
+    }
 
-            this.eventEmitter.emit("away", {
-                nick: data.params[1],
-                message: data.params[2],
-            });
-        });
+    onCommand = (data: MessageObject): void => {
+        const awayResponse = {
+            nick: data.params[1],
+            message: data.params[2],
+        };
+        this.pluginManager.emit("away", awayResponse);
+        data.handled = true;
     }
 }
 
