@@ -5,6 +5,7 @@ import { MessageObject } from "../interfaces/Message";
 import Debug from "debug";
 const pluginObjects = requireDir("../plugins");
 
+const debug:Debug.Debugger = Debug("Raptor:PluginManager");
 type Callback = (...args: any[]) => void;
 
 interface Plugins {
@@ -13,14 +14,11 @@ interface Plugins {
 
 export class PluginManager implements IPluginManager {
     plugins = {} as Plugins;
-    debug: Debug.Debugger;
     constructor(public eventEmitter: EventEmitter) {
-        this.debug = Debug("Raptor:PluginManager");
-
         Object.entries(pluginObjects).forEach(
             ([_, plugin]) => new plugin(this)
         );
-        this.eventEmitter.on("message", (data: MessageObject) => {
+        this.eventEmitter.on("rawMessage", (data: MessageObject) => {
             this.plugins[data.command] &&
                 this.plugins[data.command].some((c) => {
                     c(data);

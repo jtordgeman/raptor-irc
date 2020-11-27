@@ -6,20 +6,20 @@ import { EventEmitter } from "events";
 import Debug from "debug";
 import { MessageObject } from "../interfaces/Message";
 
+const debug: Debug.Debugger = Debug("Raptor:Network");
+
 export class NetworkManager {
     socket: tls.TLSSocket | net.Socket | null = null;
     socketError: string = "";
     eventEmitter: EventEmitter;
-    debug: Debug.Debugger;
     private replies: { [key: string]: string };
     constructor(eventEmitter: EventEmitter) {
         this.replies = ircReplies;
         this.eventEmitter = eventEmitter;
-        this.debug = Debug("Raptor:Network");
     }
 
     private handleLine(line: string): MessageObject | null {
-        this.debug(`Received line: ${line}`);
+        debug(`Received line: ${line}`);
         let prefix: string = "";
         let params: string[] = [];
 
@@ -60,7 +60,7 @@ export class NetworkManager {
     };
 
     private onSocketTimeout = (): void => {
-        this.debug("timeout");
+        debug("timeout");
         this.closeSocket();
     };
 
@@ -72,14 +72,14 @@ export class NetworkManager {
                 const trimmed: string = l.trim();
                 const messageObject = this.handleLine(trimmed);
                 if (messageObject) {
-                    this.eventEmitter.emit("message", messageObject);
+                    this.eventEmitter.emit("rawMessage", messageObject);
                 }
             });
     };
 
     private closeSocket = (): void => {
         if (!this.socket) {
-            this.debug("No socket found");
+            debug("No socket found");
             return;
         }
         this.socket.end();
@@ -106,7 +106,7 @@ export class NetworkManager {
 
     write(line: string): void {
         if (!this.socket) {
-            this.debug("Socket is not connected");
+            debug("Socket is not connected");
             return;
         }
         this.socket.write(`${line}\r\n`);

@@ -3,6 +3,7 @@ import { NetworkManager } from "./modules/NetworkManager";
 import { PluginManager } from "./modules/PluginManager";
 import { EventEmitter } from "events";
 import Debug from "debug";
+const debug: Debug.Debugger = Debug("Raptor");
 
 type Callback = (...args: any[]) => void;
 
@@ -10,19 +11,15 @@ export class Raptor {
     private networkManager: NetworkManager;
     private pluginManager: PluginManager;
     private eventManager: EventEmitter;
-    private debug: Debug.Debugger;
     constructor(private options: RaptorConnectionOptions) {
-        this.debug = Debug("Raptor");
-
         this.eventManager = new EventEmitter();
         this.pluginManager = new PluginManager(this.eventManager);
         this.networkManager = new NetworkManager(this.eventManager);
 
         // register to events
-        this.registerWithServer = this.registerWithServer.bind(this);
         this.handlePing = this.handlePing.bind(this);
-        this.eventManager.on("socketOpen", this.registerWithServer);
-        this.eventManager.on("ping", this.handlePing);
+        this.eventManager.on("socketOpen", () => this.registerWithServer());
+        this.eventManager.on("ping", (data: any) => this.handlePing(data));
     }
 
     on(eventName: string, callback: Callback): void {
@@ -33,7 +30,7 @@ export class Raptor {
         this.write(`PONG :${data.payload}`);
     }
 
-    registerWithServer(): void {
+    private registerWithServer(): void {
         if (this.options.pass) {
             this.write(`PASS ${this.options.pass}`);
         }
