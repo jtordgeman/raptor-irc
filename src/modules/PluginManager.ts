@@ -31,11 +31,8 @@ export class PluginManager implements IPluginManager {
         });
     }
     addPlugin(command: string, callback: Callback): void {
-        if (this.plugins[command]) {
-            this.plugins[command].push(callback);
-        } else {
-            this.plugins[command] = [callback];
-        }
+        const subscribers = this.plugins[command] || (this.plugins[command] = []);
+        subscribers.push(callback);
     }
     emit(eventName: string, payload: object): void {
         this.eventEmitter.emit(eventName, payload);
