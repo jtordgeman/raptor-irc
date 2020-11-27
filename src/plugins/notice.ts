@@ -3,11 +3,12 @@ import { MessageObject } from "../interfaces/Message";
 
 class Notice implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        //this.onCommand = this.onCommand.bind(this);
-        pluginManager.addPlugin("NOTICE", this.onCommand);
+        pluginManager.addPlugin("NOTICE", (data: MessageObject) =>
+            this.onCommand(data)
+        );
     }
 
-    onCommand = (data: MessageObject) => {
+    onCommand(data: MessageObject) {
         const to = data.params[0] || "";
         const message = data.params[1] || "";
 

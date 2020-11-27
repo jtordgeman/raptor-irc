@@ -3,10 +3,12 @@ import { MessageObject } from "../interfaces/Message";
 
 class Away implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.addPlugin("RPL_AWAY", this.onCommand);
+        pluginManager.addPlugin("RPL_AWAY", (data: MessageObject) =>
+            this.onCommand(data)
+        );
     }
 
-    onCommand = (data: MessageObject): void => {
+    onCommand(data: MessageObject): void {
         const awayResponse = {
             nick: data.params[1],
             message: data.params[2],
