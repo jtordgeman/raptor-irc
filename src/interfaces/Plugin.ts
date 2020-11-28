@@ -1,10 +1,16 @@
-type Callback = (...args: any[]) => void;
+import { MessageObject } from "./Message";
+
+export interface PluginResult {
+    eventName: string;
+    payload: any;
+}
 
 export interface Plugin {
     pluginManager: IPluginManager;
+    onCommand(data: MessageObject): PluginResult;
 }
 
 export interface IPluginManager {
-    addPlugin(command: string, callback: Callback): void;
-    emit(eventName: string, payload: object): void;
+    addCommand(command: string, plugin: Plugin): void;
+    write(line: string): void;
 }

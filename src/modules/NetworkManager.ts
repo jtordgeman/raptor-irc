@@ -41,7 +41,6 @@ export class NetworkManager {
                 prefix,
                 command: parsedCommand,
                 params,
-                handled: false,
             };
         }
         return null;

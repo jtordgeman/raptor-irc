@@ -13,21 +13,15 @@ export class Raptor {
     private eventManager: EventEmitter;
     constructor(private options: RaptorConnectionOptions) {
         this.eventManager = new EventEmitter();
-        this.pluginManager = new PluginManager(this.eventManager);
         this.networkManager = new NetworkManager(this.eventManager);
+        this.pluginManager = new PluginManager(this);
 
         // register to events
-        this.handlePing = this.handlePing.bind(this);
         this.eventManager.on("socketOpen", () => this.registerWithServer());
-        this.eventManager.on("ping", (data: any) => this.handlePing(data));
     }
 
     on(eventName: string, callback: Callback): void {
         this.eventManager.on(eventName, callback);
-    }
-
-    private handlePing(data: any): void {
-        this.write(`PONG :${data.payload}`);
     }
 
     private registerWithServer(): void {
@@ -48,5 +42,8 @@ export class Raptor {
 
     write(line: string): void {
         this.networkManager.write(line);
+    }
+    emit(eventName: string, payload: any): void {
+        this.eventManager.emit(eventName, payload);
     }
 }

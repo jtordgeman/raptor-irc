@@ -1,39 +1,34 @@
-import { IPluginManager, Plugin } from "../interfaces/Plugin";
+import { IPluginManager, Plugin, PluginResult } from "../interfaces/Plugin";
 import requireDir from "require-dir";
-import { EventEmitter } from "events";
 import { MessageObject } from "../interfaces/Message";
 import Debug from "debug";
+import { Raptor } from "../Raptor";
 const pluginObjects = requireDir("../plugins");
 
-const debug:Debug.Debugger = Debug("Raptor:PluginManager");
-type Callback = (...args: any[]) => void;
+const debug: Debug.Debugger = Debug("Raptor:PluginManager");
 
 interface Plugins {
-    [key: string]: Callback[];
+    [key: string]: Plugin;
 }
 
 export class PluginManager implements IPluginManager {
     plugins = {} as Plugins;
-    constructor(public eventEmitter: EventEmitter) {
+    constructor(public raptor: Raptor) {
         Object.entries(pluginObjects).forEach(
             ([_, plugin]) => new plugin(this)
         );
-        this.eventEmitter.on("rawMessage", (data: MessageObject) => {
-            this.plugins[data.command] &&
-                this.plugins[data.command].some((c) => {
-                    c(data);
-                    if (data.handled) {
-                        return true;
-                    }
-                });
+        this.raptor.on("rawMessage", (data: MessageObject) => {
+            if (this.plugins[data.command]) {
+                const pluginResult = this.plugins[data.command].onCommand(data);
+                this.raptor.emit(pluginResult.eventName, pluginResult.payload);
+            }
         });
     }
-    addPlugin(command: string, callback: Callback): void {
-        const subscribers =
-            this.plugins[command] || (this.plugins[command] = []);
-        subscribers.push(callback);
+    addCommand(command: string, plugin: Plugin): void {
+        debug(`registering handler for command: ${command}`);
+        this.plugins[command] = plugin;
     }
-    emit(eventName: string, payload: object): void {
-        this.eventEmitter.emit(eventName, payload);
+    write(line: string): void {
+        this.raptor.write(line);
     }
 }

@@ -1,20 +1,20 @@
-import { Plugin, IPluginManager } from "../interfaces/Plugin";
+import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
 
 class Away implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.addPlugin("RPL_AWAY", (data: MessageObject) =>
-            this.onCommand(data)
-        );
+        pluginManager.addCommand("RPL_AWAY", this);
     }
 
-    onCommand(data: MessageObject): void {
-        const awayResponse = {
+    onCommand(data: MessageObject): PluginResult {
+        const payload = {
             nick: data.params[1],
             message: data.params[2],
         };
-        this.pluginManager.emit("away", awayResponse);
-        data.handled = true;
+        return {
+            eventName: "away",
+            payload,
+        };
     }
 }
 
