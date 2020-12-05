@@ -11,6 +11,6 @@ export interface Plugin {
 }
 
 export interface IPluginManager {
-    addCommand(command: string, plugin: Plugin): void;
+    setCommand(command: string, plugin: Plugin): void;
     write(line: string): void;
 }

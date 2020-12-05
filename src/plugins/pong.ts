@@ -3,7 +3,7 @@ import { MessageObject } from "../interfaces/Message";
 
 class Pong implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.addCommand("PONG", this);
+        pluginManager.setCommand("PONG", this);
     }
 
     onCommand(data: MessageObject): PluginResult {

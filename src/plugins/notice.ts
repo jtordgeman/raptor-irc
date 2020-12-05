@@ -3,7 +3,7 @@ import { MessageObject } from "../interfaces/Message";
 
 class Notice implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.addCommand("NOTICE", this);
+        pluginManager.setCommand("NOTICE", this);
     }
 
     onCommand(data: MessageObject): PluginResult {

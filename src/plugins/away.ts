@@ -3,7 +3,7 @@ import { MessageObject } from "../interfaces/Message";
 
 class Away implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.addCommand("RPL_AWAY", this);
+        pluginManager.setCommand("RPL_AWAY", this);
     }
 
     onCommand(data: MessageObject): PluginResult {

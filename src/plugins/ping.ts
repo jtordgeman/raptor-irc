@@ -3,13 +3,11 @@ import { MessageObject } from "../interfaces/Message";
 
 class Ping implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.addCommand("PING", this);
+        pluginManager.setCommand("PING", this);
     }
 
     onCommand(data: MessageObject): PluginResult {
         const payload = data.params[0];
-
-        console.log("reached ping with payload:", payload);
         this.pluginManager.write(`PONG :${payload}`);
 
         return {
