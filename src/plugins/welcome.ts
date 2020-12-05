@@ -3,7 +3,7 @@ import { MessageObject } from "../interfaces/Message";
 
 class Welcome implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.addCommand("RPL_WELCOME", this);
+        pluginManager.setCommand("RPL_WELCOME", this);
     }
 
     onCommand(data: MessageObject): PluginResult {

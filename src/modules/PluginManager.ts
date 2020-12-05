@@ -24,7 +24,7 @@ export class PluginManager implements IPluginManager {
             }
         });
     }
-    addCommand(command: string, plugin: Plugin): void {
+    setCommand(command: string, plugin: Plugin): void {
         debug(`registering handler for command: ${command}`);
         this.plugins[command] = plugin;
     }
