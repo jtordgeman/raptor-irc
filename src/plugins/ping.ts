@@ -1,17 +1,20 @@
 import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
 
-class Welcome implements Plugin {
+class Ping implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.setCommand("RPL_WELCOME", this);
+        pluginManager.setCommand("PING", this);
     }
 
     onCommand(data: MessageObject): PluginResult {
+        const payload = data.params[0];
+        this.pluginManager.write(`PONG :${payload}`);
+
         return {
-            eventName: "welcome",
-            payload: data.params[0],
+            eventName: "ping",
+            payload,
         };
     }
 }
 
-export = Welcome;
+export = Ping;

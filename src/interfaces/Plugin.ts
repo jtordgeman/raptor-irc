@@ -1,5 +1,15 @@
-import { Raptor } from "../Raptor";
+import { MessageObject } from "./Message";
 
-export abstract class Plugin {
-    constructor(public raptor: Raptor) {}
+export interface PluginResult {
+    eventName: string;
+    payload: any;
+}
+
+export interface Plugin {
+    onCommand(data: MessageObject): PluginResult;
+}
+
+export interface IPluginManager {
+    setCommand(command: string, plugin: Plugin): void;
+    write(line: string): void;
 }
