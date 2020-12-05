@@ -6,7 +6,6 @@ export interface PluginResult {
 }
 
 export interface Plugin {
-    pluginManager: IPluginManager;
     onCommand(data: MessageObject): PluginResult;
 }
 
