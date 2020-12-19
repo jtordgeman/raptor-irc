@@ -18,9 +18,10 @@ export class PluginManager implements IPluginManager {
             ([_, plugin]) => new plugin(this)
         );
         this.raptor.on("rawMessage", (data: MessageObject) => {
-            if (this.plugins[data.command]) {
-                const pluginResult = this.plugins[data.command].onCommand(data);
-                this.raptor.emit(pluginResult.eventName, pluginResult.payload);
+            const cmd = this.plugins[data.command]
+            if (cmd) {
+                cmd.onCommand(data);
+                this.raptor.emit("COMMAND_"+data.command, data);
             }
         });
     }

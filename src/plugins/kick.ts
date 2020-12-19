@@ -2,6 +2,9 @@
 
 import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
+import Debug from "debug";
+
+const debug: Debug.Debugger = Debug("Raptor:PluginManager");
 
 class Kick implements Plugin {
     constructor(public pluginManager: IPluginManager) {
@@ -10,18 +13,8 @@ class Kick implements Plugin {
 
     onCommand(data: MessageObject): PluginResult {
         const [nick, hostname] = data.prefix.split("!");
-        const payload = {
-            nick,
-            hostname,
-            channel: data.params[0],
-            kicked: data.params[1],
-            message: data.params[2],
-        };
-
-        return {
-            eventName: "kick",
-            payload,
-        };
+        const [channel, kicked, message] = data.params;
+        debug("kick", nick, hostname, channel, kicked, message);
     }
 }
 

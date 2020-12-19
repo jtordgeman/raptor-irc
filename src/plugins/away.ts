@@ -1,5 +1,8 @@
 import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
+import Debug from "debug";
+
+const debug: Debug.Debugger = Debug("Raptor:Plugin");
 
 class Away implements Plugin {
     constructor(public pluginManager: IPluginManager) {
@@ -7,14 +10,8 @@ class Away implements Plugin {
     }
 
     onCommand(data: MessageObject): PluginResult {
-        const payload = {
-            nick: data.params[1],
-            message: data.params[2],
-        };
-        return {
-            eventName: "away",
-            payload,
-        };
+        const [nick, message] = data.params;
+        debug("away", nick, message);
     }
 }
 

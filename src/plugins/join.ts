@@ -1,5 +1,8 @@
 import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
+import Debug from "debug";
+
+const debug: Debug.Debugger = Debug("Raptor:Plugin");
 
 class Join implements Plugin {
     constructor(public pluginManager: IPluginManager) {
@@ -8,16 +11,8 @@ class Join implements Plugin {
 
     onCommand(data: MessageObject): PluginResult {
         const [nick, hostname] = data.prefix.split("!");
-        const payload = {
-            nick,
-            hostname,
-            channel: data.params[0],
-        };
-
-        return {
-            eventName: "join",
-            payload,
-        };
+        const channel = data.params[0];
+        debug("join", nick, hostname, channel);
     }
 }
 

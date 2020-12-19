@@ -1,5 +1,8 @@
 import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
+import Debug from "debug";
+
+const debug: Debug.Debugger = Debug("Raptor:Plugin");
 
 class Notice implements Plugin {
     constructor(public pluginManager: IPluginManager) {
@@ -14,11 +17,7 @@ class Notice implements Plugin {
             to: data.params[0] || "",
             message: data.params[1] || "",
         };
-
-        return {
-            eventName: "notice",
-            payload,
-        };
+        debug("notice");
     }
 }
 
