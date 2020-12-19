@@ -34,9 +34,11 @@ export class NetworkManager {
                 m.startsWith(":")
             );
             params = messageArray.slice(0, paramMessaageIndex);
-            params.push(
-                messageArray.splice(paramMessaageIndex).join(" ").substring(1)
-            );
+            let payload = messageArray.splice(paramMessaageIndex).join(" ");
+            if (payload.startsWith(":")) {
+                payload = payload.substring(1);
+            }
+            params.push(payload);
             return {
                 prefix,
                 command: parsedCommand,
