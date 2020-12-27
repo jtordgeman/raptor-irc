@@ -7,10 +7,9 @@ class Notice implements Plugin {
     }
 
     onCommand(data: MessageObject): PluginResult {
-        const [from, hostname] = data.prefix.split("!");
         const payload = {
-            from,
-            hostname,
+            from: data.prefix.nick || data.prefix.host,
+            hostname: data.prefix.host,
             to: data.params[0] || "",
             message: data.params[1] || "",
         };

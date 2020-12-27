@@ -9,10 +9,9 @@ class Kick implements Plugin {
     }
 
     onCommand(data: MessageObject): PluginResult {
-        const [nick, hostname] = data.prefix.split("!");
         const payload = {
-            nick,
-            hostname,
+            nick: data.prefix.nick,
+            hostname: data.prefix.host,
             channel: data.params[0],
             kicked: data.params[1],
             message: data.params[2],

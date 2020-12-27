@@ -7,10 +7,9 @@ class Mode implements Plugin {
     }
 
     onCommand(data: MessageObject): PluginResult {
-        const [nick, hostname] = data.prefix.split("!");
         const payload = {
-            nick,
-            hostname,
+            nick: data.prefix.nick || data.prefix.host,
+            hostname: data.prefix.host,
             channel: data.params[0],
             flag: data.params[1] || "",
             payload: data.params.length > 2 ? data.params.slice(2) : "",
