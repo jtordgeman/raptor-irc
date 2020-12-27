@@ -19,7 +19,7 @@ export class NetworkManager {
     }
 
     private handlePrefix(prefix: string): MessagePrefix {
-        let result = <MessagePrefix>{};
+        const result = {} as MessagePrefix;
         if (!prefix) {
             return result;
         }
@@ -45,7 +45,7 @@ export class NetworkManager {
 
     private handleLine(line: string): MessageObject | null {
         debug(`Received line: ${line}`);
-        let prefix = <MessagePrefix>{};
+        let prefix = {} as MessagePrefix;
         let params: string[] = [];
 
         const messageArray: string[] = line.split(" ");
