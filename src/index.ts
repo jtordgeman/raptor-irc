@@ -25,8 +25,12 @@ raptor.on("welcome", (data) => {
     //raptor.write("JOIN #juggerme")
 });
 
-raptor.on("away", (data: AwayReply) => {
-    console.log(data);
+raptor.on("kick", (data) => {
+    console.log("kick", data);
+});
+
+raptor.on("mode", (data) => {
+    console.log("mode", data);
 });
 
 raptor.on("message", (data) => {

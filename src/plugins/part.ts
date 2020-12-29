@@ -1,24 +1,23 @@
 import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
 import { MessageObject } from "../interfaces/Message";
 
-class Notice implements Plugin {
+class Part implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.setCommand("NOTICE", this);
+        pluginManager.setCommand("PART", this);
     }
 
     onCommand(data: MessageObject): PluginResult {
         const payload = {
-            from: data.prefix.nick || data.prefix.host,
+            nick: data.prefix.nick,
             hostname: data.prefix.host,
-            to: data.params[0] || "",
-            message: data.params[1] || "",
+            channel: data.params[0],
         };
 
         return {
-            eventName: "notice",
+            eventName: "part",
             payload,
         };
     }
 }
 
-export = Notice;
+export = Part;

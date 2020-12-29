@@ -4,7 +4,7 @@ import { RaptorConnectionOptions } from "../interfaces/RaptorOptions";
 import ircReplies from "irc-replies";
 import { EventEmitter } from "events";
 import Debug from "debug";
-import { MessageObject } from "../interfaces/Message";
+import { MessageObject, MessagePrefix } from "../interfaces/Message";
 
 const debug: Debug.Debugger = Debug("Raptor:Network");
 
@@ -18,15 +18,42 @@ export class NetworkManager {
         this.eventEmitter = eventEmitter;
     }
 
+    private handlePrefix(prefix: string): MessagePrefix {
+        const result = {} as MessagePrefix;
+        if (!prefix) {
+            return result;
+        }
+
+        result.raw = prefix;
+
+        const userIndication = prefix.indexOf("!");
+        if (userIndication > 0) {
+            result.isServer = false;
+            result.nick = prefix.slice(0, userIndication);
+            const hostIndication = prefix.indexOf("@", userIndication);
+            if (hostIndication > 0) {
+                result.user = prefix.slice(userIndication + 1, hostIndication);
+                result.host = prefix.slice(hostIndication + 1);
+            }
+        } else {
+            result.isServer = true;
+            result.host = prefix;
+        }
+
+        return result;
+    }
+
     private handleLine(line: string): MessageObject | null {
         debug(`Received line: ${line}`);
-        let prefix: string = "";
+        let prefix = {} as MessagePrefix;
         let params: string[] = [];
 
         const messageArray: string[] = line.split(" ");
         if (messageArray.length >= 2) {
             if (messageArray[0].startsWith(":")) {
-                prefix = messageArray.splice(0, 1)[0].trim().substring(1);
+                prefix = this.handlePrefix(
+                    messageArray.splice(0, 1)[0].trim().substring(1)
+                );
             }
             const command = messageArray.splice(0, 1)[0].trim();
             const parsedCommand = this.replies[command] || command;
@@ -34,9 +61,11 @@ export class NetworkManager {
                 m.startsWith(":")
             );
             params = messageArray.slice(0, paramMessaageIndex);
-            params.push(
-                messageArray.splice(paramMessaageIndex).join(" ").substring(1)
-            );
+            let payload = messageArray.splice(paramMessaageIndex).join(" ");
+            if (payload.startsWith(":")) {
+                payload = payload.substring(1);
+            }
+            params.push(payload);
             return {
                 prefix,
                 command: parsedCommand,
