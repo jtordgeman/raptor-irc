@@ -1,11 +1,11 @@
-import { IPluginManager, Plugin, PluginResult } from "../interfaces/Plugin";
-import requireDir from "require-dir";
-import { MessageObject } from "../interfaces/Message";
-import Debug from "debug";
-import { Raptor } from "../Raptor";
-const pluginObjects = requireDir("../plugins");
+import { IPluginManager, Plugin, PluginResult } from '../interfaces/Plugin';
+import requireDir from 'require-dir';
+import { MessageObject } from '../interfaces/Message';
+import Debug from 'debug';
+import { Raptor } from '../Raptor';
+const pluginObjects = requireDir('../plugins');
 
-const debug: Debug.Debugger = Debug("Raptor:PluginManager");
+const debug: Debug.Debugger = Debug('Raptor:PluginManager');
 
 interface Plugins {
     [key: string]: Plugin;
@@ -14,16 +14,14 @@ interface Plugins {
 export class PluginManager implements IPluginManager {
     plugins = {} as Plugins;
     constructor(public raptor: Raptor) {
-        Object.entries(pluginObjects).forEach(
-            ([_, plugin]) => new plugin(this)
-        );
-        this.raptor.on("rawMessage", (data: MessageObject) => {
+        Object.entries(pluginObjects).forEach(([_, plugin]) => new plugin(this));
+        this.raptor.on('rawMessage', (data: MessageObject) => {
             let pluginResult = {} as PluginResult;
             if (this.plugins[data.command]) {
                 pluginResult = this.plugins[data.command].onCommand(data);
                 this.raptor.emit(pluginResult.eventName, pluginResult.payload);
             }
-            this.raptor.emit("message", {
+            this.raptor.emit('message', {
                 raw: data,
                 parsed: pluginResult,
             });

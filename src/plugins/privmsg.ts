@@ -1,25 +1,28 @@
 import { Plugin, IPluginManager, PluginResult } from '../interfaces/Plugin';
 import { MessageObject } from '../interfaces/Message';
 
-class Kick implements Plugin {
+class PrivMsg implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.setCommand('KICK', this);
+        pluginManager.setCommand('PRIVMSG', this);
     }
 
     onCommand(data: MessageObject): PluginResult {
+        const message = data.params[1];
+        if (message.startsWith('+OK')) {
+            //TODO: add fish key on raptor and compare
+        }
         const payload = {
-            nick: data.prefix.nick,
+            from: data.prefix.nick,
             hostname: data.prefix.host,
-            channel: data.params[0],
-            kicked: data.params[1],
-            message: data.params[2],
+            target: data.params[0],
+            message,
         };
 
         return {
-            eventName: 'kick',
+            eventName: 'privmsg',
             payload,
         };
     }
 }
 
-export = Kick;
+export = PrivMsg;

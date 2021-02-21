@@ -1,14 +1,14 @@
-import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
-import { MessageObject } from "../interfaces/Message";
+import { Plugin, IPluginManager, PluginResult } from '../interfaces/Plugin';
+import { MessageObject } from '../interfaces/Message';
 
 class Pong implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.setCommand("PONG", this);
+        pluginManager.setCommand('PONG', this);
     }
 
     onCommand(data: MessageObject): PluginResult {
         return {
-            eventName: "pong",
+            eventName: 'pong',
             payload: data.params[0],
         };
     }

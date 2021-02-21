@@ -1,9 +1,9 @@
-import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
-import { MessageObject } from "../interfaces/Message";
+import { Plugin, IPluginManager, PluginResult } from '../interfaces/Plugin';
+import { MessageObject } from '../interfaces/Message';
 
 class Join implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.setCommand("JOIN", this);
+        pluginManager.setCommand('JOIN', this);
     }
 
     onCommand(data: MessageObject): PluginResult {
@@ -14,7 +14,7 @@ class Join implements Plugin {
         };
 
         return {
-            eventName: "join",
+            eventName: 'join',
             payload,
         };
     }

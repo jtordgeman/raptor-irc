@@ -1,4 +1,4 @@
-import { MessageObject } from "./Message";
+import { MessageObject } from './Message';
 
 export interface PluginResult {
     eventName: string;
