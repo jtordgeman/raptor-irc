@@ -4,13 +4,14 @@ export interface ChannelOptions {
     fishKey?: string;
 }
 
-export interface ChannelObject {
+export interface ChannelInterface {
     name: string;
     write(msg: string): void;
     join(): void;
     part(msg?: string): void;
-    setmode(mode: string): void;
+    setmode(mode: string, params:string): void;
+    unsetmode(mode: string, params:string): void;
     notice(msg: string): void;
-    ban(user: string): void;
+    ban(user: string, message?:string): void;
     unban(user: string): void;
 }

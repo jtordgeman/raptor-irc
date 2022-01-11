@@ -5,26 +5,47 @@ import { EventEmitter } from 'events';
 import { ChannelOptions } from './interfaces/Channel';
 import { Channel } from './modules/Channel';
 import Debug from 'debug';
+import { PrivMsgObj } from './interfaces/Message';
+import { Callback } from './types/Callback';
 const debug: Debug.Debugger = Debug('Raptor');
-
-type Callback = (...args: any[]) => void;
 
 export class Raptor {
     private networkManager: NetworkManager;
     private pluginManager: PluginManager;
-    private eventManager: EventEmitter;
+    private eeMessage: EventEmitter;
+    private eeChannel: EventEmitter;
+    private channels: Channel[];
+
+    //private messageEventManager: EventEmitter;
     constructor(private options: RaptorConnectionOptions) {
         debug('Raptor initializing');
-        this.eventManager = new EventEmitter();
-        this.networkManager = new NetworkManager(this.eventManager);
+        this.eeMessage = new EventEmitter();
+        this.eeChannel = new EventEmitter();
+        this.networkManager = new NetworkManager(this.eeMessage);
         this.pluginManager = new PluginManager(this);
+        this.channels = [];
 
         // register to events
-        this.eventManager.on('socketOpen', () => this.registerWithServer());
+        this.eeMessage.on('socketOpen', () => this.registerWithServer());
+        this.eeMessage.on('privmsg', (privMsgObj: PrivMsgObj) => this.onPrivMsg(privMsgObj));
+    }
+
+    onPrivMsg(privMsgObj: PrivMsgObj) :void {
+        const channel = this.channels.find((c) => c.name === privMsgObj.target);
+        if (channel && channel.blowfish) {
+            const text = channel.blowfish.decrypt(privMsgObj.message);
+            Object.assign(privMsgObj, { message: text });
+        }
+
+        this.eeChannel.emit('privmsg', privMsgObj);
     }
 
     on(eventName: string, callback: Callback): void {
-        this.eventManager.on(eventName, callback);
+        this.eeMessage.on(eventName, callback);
+    }
+
+    onChannel(eventName: string, callback: Callback): void {
+        this.eeChannel.on(eventName, callback);
     }
 
     private registerWithServer(): void {
@@ -43,9 +64,11 @@ export class Raptor {
         this.networkManager.write(line);
     }
     emit(eventName: string, payload: any): void {
-        this.eventManager.emit(eventName, payload);
+        this.eeMessage.emit(eventName, payload);
     }
     channel(options: ChannelOptions): Channel {
-        return new Channel(options, this);
+        const channel = new Channel(options, this);
+        this.channels.push(channel);
+        return channel;
     }
 }

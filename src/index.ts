@@ -1,22 +1,22 @@
 import { Raptor } from './Raptor';
 
-// const raptor = new Raptor({
-//     host: "irc.inet.tele.dk",
-//     //host: "irc.efnet.nl",
-//     port: 6667,
-//     nick: "Raptorr222",
-//     user: "Raptor",
-// });
-
 const raptor = new Raptor({
-    host: 'loud.farted.net',
-    port: 7000,
-    ssl: true,
-    selfSigned: true,
-    nick: 'JugNode',
-    user: 'JugNode',
-    pass: 'q03ea5vqTbfrXnhTwYuxFzAyHqFSESJSB9WXug8fgX2mHCa7',
+    host: "irc.inet.tele.dk",
+    //host: "irc.efnet.nl",
+    port: 6667,
+    nick: "Raptorr222",
+    user: "Raptor",
 });
+
+// const raptor = new Raptor({
+//     host: 'loud.farted.net',
+//     port: 7000,
+//     ssl: true,
+//     selfSigned: true,
+//     nick: 'JugNode',
+//     user: 'JugNode',
+//     pass: 'q03ea5vqTbfrXnhTwYuxFzAyHqFSESJSB9WXug8fgX2mHCa7',
+// });
 
 // const spam = raptor.channel({
 //     name: "badbotsfuntime",
@@ -28,13 +28,17 @@ const jug = raptor.channel({
     fishKey: 'cbc:b9SX8S7fvK659P4',
 });
 
-raptor.on('welcome', (data) => {
+raptor.on('welcome', (data: string) => {
     console.log(`welcome got: ${data}`);
+    //console.log("jug is", jug);
 
     jug.join();
-    jug.write('Im working!');
+    //jug.setmode("o","abuse");
+    jug.notice("FUN NOTICE!!");
+    //jug.write('Im working!');
     jug.on('privmsg', (data) => {
         console.log(`in index i got: ${JSON.stringify(data)}`);
+        //jug.write(`${data.from} you stupid fuck stop testing me!`);
     });
 
     //spam.write("+OK *T29wcyEgSSBsNO/ftGR9hrzHMRH/rXspWuNcsx0OQfc=");
