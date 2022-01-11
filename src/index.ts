@@ -30,20 +30,14 @@ const jug = raptor.channel({
 
 raptor.on('welcome', (data: string) => {
     console.log(`welcome got: ${data}`);
-    //console.log("jug is", jug);
 
     jug.join();
-    //jug.setmode("o","abuse");
     jug.notice("FUN NOTICE!!");
     //jug.write('Im working!');
     jug.on('privmsg', (data) => {
         console.log(`in index i got: ${JSON.stringify(data)}`);
         //jug.write(`${data.from} you stupid fuck stop testing me!`);
     });
-
-    //spam.write("+OK *T29wcyEgSSBsNO/ftGR9hrzHMRH/rXspWuNcsx0OQfc=");
-    //spam.part();
-    //raptor.write("JOIN #juggerme")
 });
 
 raptor.on('kick', (data) => {
