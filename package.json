@@ -2,7 +2,9 @@
     "name": "raptor-ts",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "dist/Raptor.js",
+    "types": "dist/Raptor.d.ts",
+    "files": ["dist"],
     "scripts": {
         "dev": "nodemon",
         "format": "prettier --write \"src/**/*.ts\" ",
@@ -10,8 +12,8 @@
         "build": "rimraf ./build && tsc",
         "start": "npm run build && node build/index.js"
     },
-    "author": "",
-    "license": "ISC",
+    "author": "Johnny Tordgeman (https://github.com/jtordgeman)",
+    "license": "MIT",
     "devDependencies": {
         "@types/debug": "^4.1.7",
         "@types/node": "^17.0.8",

@@ -31,7 +31,7 @@ export class Raptor {
     }
 
     onPrivMsg(privMsgObj: PrivMsgObj) :void {
-        const channel = this.channels.find((c) => c.name === privMsgObj.target);
+        const channel = this.channels.find((c) => c.name.toLowerCase() === privMsgObj.target.toLowerCase());
         if (channel && channel.blowfish) {
             const text = channel.blowfish.decrypt(privMsgObj.message);
             Object.assign(privMsgObj, { message: text });
