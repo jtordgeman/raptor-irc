@@ -11,3 +11,10 @@ export interface MessageObject {
     command: string;
     params: string[];
 }
+
+export interface PrivMsgObj {
+    from: string;
+    hostname: string;
+    target: string;
+    message: string;
+}

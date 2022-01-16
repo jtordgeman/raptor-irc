@@ -1,9 +1,9 @@
-import { Plugin, IPluginManager, PluginResult } from "../interfaces/Plugin";
-import { MessageObject } from "../interfaces/Message";
+import { Plugin, IPluginManager, PluginResult } from '../interfaces/Plugin';
+import { MessageObject } from '../interfaces/Message';
 
 class Ping implements Plugin {
     constructor(public pluginManager: IPluginManager) {
-        pluginManager.setCommand("PING", this);
+        pluginManager.setCommand('PING', this);
     }
 
     onCommand(data: MessageObject): PluginResult {
@@ -11,7 +11,7 @@ class Ping implements Plugin {
         this.pluginManager.write(`PONG :${payload}`);
 
         return {
-            eventName: "ping",
+            eventName: 'ping',
             payload,
         };
     }
