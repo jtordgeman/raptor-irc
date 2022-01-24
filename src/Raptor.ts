@@ -13,14 +13,11 @@ export class Raptor {
     private networkManager: NetworkManager;
     private pluginManager: PluginManager;
     private eeMessage: EventEmitter;
-    private eeChannel: EventEmitter;
     private channels: Channel[];
 
-    //private messageEventManager: EventEmitter;
     constructor(private options: RaptorConnectionOptions) {
         debug('Raptor initializing');
         this.eeMessage = new EventEmitter();
-        this.eeChannel = new EventEmitter();
         this.networkManager = new NetworkManager(this.eeMessage);
         this.pluginManager = new PluginManager(this);
         this.channels = [];
@@ -30,22 +27,24 @@ export class Raptor {
         this.eeMessage.on('privmsg', (privMsgObj: PrivMsgObj) => this.onPrivMsg(privMsgObj));
     }
 
-    onPrivMsg(privMsgObj: PrivMsgObj) :void {
+    onPrivMsg(privMsgObj: PrivMsgObj): void {
         const channel = this.channels.find((c) => c.name.toLowerCase() === privMsgObj.target.toLowerCase());
         if (channel && channel.blowfish) {
             const text = channel.blowfish.decrypt(privMsgObj.message);
             Object.assign(privMsgObj, { message: text });
+            channel.emitter.emit('privmsg', privMsgObj);
         }
-
-        this.eeChannel.emit('privmsg', privMsgObj);
     }
 
     on(eventName: string, callback: Callback): void {
         this.eeMessage.on(eventName, callback);
     }
 
-    onChannel(eventName: string, callback: Callback): void {
-        this.eeChannel.on(eventName, callback);
+    onChannel(name: string, eventName: string, callback: Callback): void {
+        const channel = this.channels.find((c) => c.name.toLowerCase() === name.toLowerCase());
+        if (channel) {
+            channel.emitter.on(eventName, callback);
+        }
     }
 
     private registerWithServer(): void {
