@@ -33,7 +33,7 @@
     },
     "dependencies": {
         "irc-replies": "^2.0.1",
-        "raptor-blowfish": "^1.0.0",
+        "raptor-blowfish": "^1.1.0",
         "require-dir": "^1.2.0"
     }
 }
