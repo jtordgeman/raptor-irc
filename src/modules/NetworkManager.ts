@@ -80,11 +80,12 @@ export class NetworkManager {
     };
 
     private onSocketError = (err: Error): void => {
+        debug('Socket error: ', err);
         this.socketError = err.message;
     };
 
     private onSocketTimeout = (): void => {
-        debug('timeout');
+        debug('Socket timeout');
         this.closeSocket();
     };
 
