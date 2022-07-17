@@ -1,6 +1,7 @@
 # Raptor-IRC 🦕
 
-> A tiny and fast TypeScript based framework for IRC bots
+> A tiny and fast IRC bots framework written in TypeScript
+
 
 ## Installation
 
