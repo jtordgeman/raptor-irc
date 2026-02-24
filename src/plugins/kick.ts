@@ -1,5 +1,5 @@
-import { Plugin, IPluginManager, PluginResult } from '../interfaces/Plugin';
-import { MessageObject } from '../interfaces/Message';
+import type { MessageObject } from '../interfaces/Message.js';
+import type { IPluginManager, Plugin, PluginResult } from '../interfaces/Plugin.js';
 
 class Kick implements Plugin {
     constructor(public pluginManager: IPluginManager) {
@@ -22,4 +22,4 @@ class Kick implements Plugin {
     }
 }
 
-export = Kick;
+export default Kick;

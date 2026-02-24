@@ -1,5 +1,5 @@
-import { Plugin, IPluginManager, PluginResult } from '../interfaces/Plugin';
-import { MessageObject } from '../interfaces/Message';
+import type { MessageObject } from '../interfaces/Message.js';
+import type { IPluginManager, Plugin, PluginResult } from '../interfaces/Plugin.js';
 
 class Mode implements Plugin {
     constructor(public pluginManager: IPluginManager) {
@@ -12,7 +12,7 @@ class Mode implements Plugin {
             hostname: data.prefix.host,
             channel: data.params[0],
             flag: data.params[1] || '',
-            payload: data.params.length > 2 ? data.params.slice(2) : '',
+            payload: data.params.length > 2 ? data.params.slice(2) : [],
         };
 
         return {
@@ -22,4 +22,4 @@ class Mode implements Plugin {
     }
 }
 
-export = Mode;
+export default Mode;

@@ -1,8 +1,8 @@
-import { MessageObject } from './Message';
+import type { MessageObject } from './Message.js';
 
 export interface PluginResult {
     eventName: string;
-    payload: any;
+    payload: unknown;
 }
 
 export interface Plugin {

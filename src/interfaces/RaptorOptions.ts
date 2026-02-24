@@ -7,4 +7,9 @@ export interface RaptorConnectionOptions {
     realName?: string;
     ssl?: boolean;
     selfSigned?: boolean;
+    reconnect?: boolean;
+    reconnectDelay?: number;
+    reconnectMaxRetries?: number;
+    socketTimeout?: number;
+    pingTimeout?: number;
 }

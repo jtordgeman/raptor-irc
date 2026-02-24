@@ -1,9 +1,9 @@
+import { EventEmitter } from 'node:events';
 import Debug from 'debug';
-import { EventEmitter } from 'stream';
-import { ChannelOptions, ChannelInterface } from '../interfaces/Channel';
-import { Raptor } from '../Raptor';
-import { Callback } from '../types/Callback';
-import { Blowfish } from './Blowfish';
+import type { ChannelInterface, ChannelOptions } from '../interfaces/Channel.js';
+import type { Raptor } from '../Raptor.js';
+import type { Callback } from '../types/Callback.js';
+import { Blowfish } from './Blowfish.js';
 
 const debug: Debug.Debugger = Debug('Raptor:Channel');
 
@@ -11,7 +11,10 @@ export class Channel implements ChannelInterface {
     name: string;
     blowfish?: Blowfish;
     emitter: EventEmitter;
-    constructor(private options: ChannelOptions, public raptor: Raptor) {
+    constructor(
+        private options: ChannelOptions,
+        public raptor: Raptor,
+    ) {
         this.name = `#${options.name}`;
         this.emitter = new EventEmitter();
         if (options.fishKey) {
@@ -24,15 +27,25 @@ export class Channel implements ChannelInterface {
     }
 
     write(msg: string): void {
-        const text = this.blowfish ? this.blowfish.encrypt(msg) : msg;
+        let text = msg;
+        if (this.blowfish) {
+            try {
+                text = this.blowfish.encrypt(msg);
+            } catch (err) {
+                debug(`Encryption failed for ${this.name}, message not sent:`, err);
+                return;
+            }
+        }
         this.raptor.write(`PRIVMSG ${this.name} :${text}`);
     }
+
     join(): void {
-        this.raptor.write(`JOIN ${this.name} ${this.options.key}`);
+        this.raptor.write(`JOIN ${this.name}${this.options.key ? ` ${this.options.key}` : ''}`);
     }
     part(msg?: string): void {
-        this.raptor.write(`PART ${this.name} ${msg ? msg : ''}`);
+        this.raptor.write(`PART ${this.name}${msg ? ` :${msg}` : ''}`);
     }
+
     setmode(mode: string, params: string): void {
         this.raptor.write(`MODE ${this.name} +${mode} ${params}`);
     }
@@ -40,15 +53,12 @@ export class Channel implements ChannelInterface {
         this.raptor.write(`MODE ${this.name} -${mode} ${params}`);
     }
     notice(msg: string): void {
-        this.raptor.write(`NOTICE ${this.name} ${msg}`);
+        this.raptor.write(`NOTICE ${this.name} :${msg}`);
     }
     ban(user: string, message?: string): void {
-        this.raptor.write(`MODE ${this.name} +b ${user} ${message}`);
+        this.raptor.write(`MODE ${this.name} +b ${user}${message ? ` ${message}` : ''}`);
     }
     unban(user: string): void {
         this.raptor.write(`MODE ${this.name} -b ${user}`);
-    }
-    setEmitter(emitter: EventEmitter): void {
-        this.emitter = emitter;
     }
 }

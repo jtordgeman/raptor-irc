@@ -1,18 +1,22 @@
-import tls from 'tls';
-import net from 'net';
-import { RaptorConnectionOptions } from '../interfaces/RaptorOptions';
-import ircReplies from 'irc-replies';
-import { EventEmitter } from 'events';
+import type { EventEmitter } from 'node:events';
+import net from 'node:net';
+import tls from 'node:tls';
 import Debug from 'debug';
-import { MessageObject, MessagePrefix } from '../interfaces/Message';
+import ircReplies from 'irc-replies' with { type: 'json' };
+import type { MessageObject, MessagePrefix } from '../interfaces/Message.js';
+import type { RaptorConnectionOptions } from '../interfaces/RaptorOptions.js';
 
 const debug: Debug.Debugger = Debug('Raptor:Network');
+
+const DEFAULT_SOCKET_TIMEOUT = 300_000; // 5 minutes
 
 export class NetworkManager {
     socket: tls.TLSSocket | net.Socket | null = null;
     socketError = '';
     eventEmitter: EventEmitter;
-    private replies: { [key: string]: string };
+    private replies: Record<string, string>;
+    private intentionalDisconnect = false;
+
     constructor(eventEmitter: EventEmitter) {
         this.replies = ircReplies;
         this.eventEmitter = eventEmitter;
@@ -55,13 +59,18 @@ export class NetworkManager {
             }
             const command = messageArray.splice(0, 1)[0].trim();
             const parsedCommand = this.replies[command] || command;
-            const paramMessaageIndex = messageArray.findIndex((m) => m.startsWith(':'));
-            params = messageArray.slice(0, paramMessaageIndex);
-            let payload = messageArray.splice(paramMessaageIndex).join(' ');
-            if (payload.startsWith(':')) {
-                payload = payload.substring(1);
+            const paramMessageIndex = messageArray.findIndex((m) => m.startsWith(':'));
+            if (paramMessageIndex === -1) {
+                // No trailing parameter — all remaining tokens are simple params
+                params = messageArray;
+            } else {
+                params = messageArray.slice(0, paramMessageIndex);
+                let payload = messageArray.slice(paramMessageIndex).join(' ');
+                if (payload.startsWith(':')) {
+                    payload = payload.substring(1);
+                }
+                params.push(payload);
             }
-            params.push(payload);
             return {
                 prefix,
                 command: parsedCommand,
@@ -76,7 +85,10 @@ export class NetworkManager {
     };
 
     private onSocketClose = (): void => {
-        this.eventEmitter.emit('socketClose', this.socketError);
+        this.eventEmitter.emit('socketClose', {
+            error: this.socketError,
+            intentional: this.intentionalDisconnect,
+        });
     };
 
     private onSocketError = (err: Error): void => {
@@ -86,7 +98,11 @@ export class NetworkManager {
 
     private onSocketTimeout = (): void => {
         debug('Socket timeout');
-        this.closeSocket();
+        this.destroySocket();
+        this.eventEmitter.emit('socketClose', {
+            error: 'Socket timeout',
+            intentional: false,
+        });
     };
 
     private onSocketData = (data: Buffer): void => {
@@ -102,16 +118,27 @@ export class NetworkManager {
             });
     };
 
-    private closeSocket = (): void => {
+    private destroySocket = (): void => {
         if (!this.socket) {
             debug('No socket found');
             return;
         }
-        this.socket.end();
+        this.socket.removeAllListeners();
+        this.socket.destroy();
         this.socket = null;
     };
 
     connect(options: RaptorConnectionOptions): void {
+        this.intentionalDisconnect = false;
+        this.socketError = '';
+
+        // Clean up any existing socket before reconnecting
+        if (this.socket) {
+            this.socket.removeAllListeners();
+            this.socket.destroy();
+            this.socket = null;
+        }
+
         let socketConnectEvent = 'connect';
         if (options.ssl) {
             const creds = { rejectUnauthorized: !options.selfSigned };
@@ -121,12 +148,27 @@ export class NetworkManager {
             this.socket = net.connect(options.port, options.host);
         }
         this.socket.setEncoding('utf8');
+        this.socket.setTimeout(options.socketTimeout ?? DEFAULT_SOCKET_TIMEOUT);
+
         // register events
         this.socket.on(socketConnectEvent, this.onSocketConnected);
         this.socket.on('data', this.onSocketData);
         this.socket.on('close', this.onSocketClose);
         this.socket.on('error', this.onSocketError);
         this.socket.on('timeout', this.onSocketTimeout);
+    }
+
+    disconnect(): void {
+        this.intentionalDisconnect = true;
+        this.destroySocket();
+    }
+
+    forceClose(): void {
+        this.destroySocket();
+        this.eventEmitter.emit('socketClose', {
+            error: this.socketError,
+            intentional: false,
+        });
     }
 
     write(line: string): void {

@@ -1,4 +1,4 @@
-import { EventEmitter } from 'stream';
+import type { EventEmitter } from 'node:events';
 
 export interface ChannelOptions {
     name: string;
