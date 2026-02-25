@@ -1,16 +1,14 @@
 import Debug from 'debug';
 import { Fish } from 'raptor-blowfish';
-import { Cipher } from 'raptor-blowfish/lib/cipher';
-import { Decipher } from 'raptor-blowfish/lib/decipher';
 
 const debug: Debug.Debugger = Debug('Raptor:Fish');
 
 export class Blowfish {
-    private enc: Cipher;
-    private dec: Decipher;
+    private enc: ReturnType<typeof Fish.createCipher>;
+    private dec: ReturnType<typeof Fish.createDecipher>;
 
     constructor(key: string) {
-        debug(`Blowfish initializing with key: ${key}`);
+        debug('Blowfish initializing');
         this.enc = Fish.createCipher(key);
         this.dec = Fish.createDecipher(key);
     }

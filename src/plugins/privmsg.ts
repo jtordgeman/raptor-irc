@@ -1,5 +1,5 @@
-import { Plugin, IPluginManager, PluginResult } from '../interfaces/Plugin';
-import { MessageObject } from '../interfaces/Message';
+import type { MessageObject } from '../interfaces/Message.js';
+import type { IPluginManager, Plugin, PluginResult } from '../interfaces/Plugin.js';
 
 class PrivMsg implements Plugin {
     constructor(public pluginManager: IPluginManager) {
@@ -7,12 +7,12 @@ class PrivMsg implements Plugin {
     }
 
     onCommand(data: MessageObject): PluginResult {
-        const message = data.params[1];
+        const message = data.params[1] || '';
         if (message.startsWith('+OK')) {
             //TODO: add fish key on raptor and compare
         }
         const payload = {
-            from: data.prefix.nick,
+            from: data.prefix.nick || data.prefix.host,
             hostname: data.prefix.host,
             target: data.params[0],
             message,
@@ -25,4 +25,4 @@ class PrivMsg implements Plugin {
     }
 }
 
-export = PrivMsg;
+export default PrivMsg;

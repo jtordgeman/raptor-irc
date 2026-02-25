@@ -1,5 +1,5 @@
-import { Plugin, IPluginManager, PluginResult } from '../interfaces/Plugin';
-import { MessageObject } from '../interfaces/Message';
+import type { MessageObject } from '../interfaces/Message.js';
+import type { IPluginManager, Plugin, PluginResult } from '../interfaces/Plugin.js';
 
 class Join implements Plugin {
     constructor(public pluginManager: IPluginManager) {
@@ -20,4 +20,4 @@ class Join implements Plugin {
     }
 }
 
-export = Join;
+export default Join;
