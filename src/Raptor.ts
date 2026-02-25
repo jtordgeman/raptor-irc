@@ -168,6 +168,7 @@ export class Raptor {
             this.reconnectTimer = null;
         }
         this.clearPingWatchdog();
+        this.isReconnecting = false;
         this.networkManager.disconnect();
     }
 
