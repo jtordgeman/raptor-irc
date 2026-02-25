@@ -15,7 +15,8 @@ export class Channel implements ChannelInterface {
         private options: ChannelOptions,
         public raptor: Raptor,
     ) {
-        this.name = `#${options.name}`;
+        const IRC_PREFIXES = ['#', '&', '+', '!'];
+        this.name = IRC_PREFIXES.includes(options.name[0]) ? options.name : `#${options.name}`;
         this.emitter = new EventEmitter();
         if (options.fishKey) {
             this.blowfish = new Blowfish(options.fishKey);

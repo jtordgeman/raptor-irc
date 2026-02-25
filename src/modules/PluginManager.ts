@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import Debug from 'debug';
 import type { MessageObject } from '../interfaces/Message.js';
 import type { IPluginManager, Plugin, PluginResult } from '../interfaces/Plugin.js';
@@ -38,7 +38,7 @@ export class PluginManager implements IPluginManager {
         for (const file of files) {
             const modulePath = path.join(pluginsDir, file);
             try {
-                const mod = await import(modulePath);
+                const mod = await import(pathToFileURL(modulePath).href);
                 const PluginClass = mod.default;
                 if (PluginClass) {
                     new PluginClass(this);

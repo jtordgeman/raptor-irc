@@ -11,9 +11,9 @@ const debug: Debug.Debugger = Debug('Raptor:Network');
 const DEFAULT_SOCKET_TIMEOUT = 300_000; // 5 minutes
 
 export class NetworkManager {
-    socket: tls.TLSSocket | net.Socket | null = null;
-    socketError = '';
-    eventEmitter: EventEmitter;
+    private socket: tls.TLSSocket | net.Socket | null = null;
+    private socketError = '';
+    private readonly eventEmitter: EventEmitter;
     private replies: Record<string, string>;
     private intentionalDisconnect = false;
 

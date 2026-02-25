@@ -124,7 +124,7 @@ export class Raptor {
         }
     }
 
-    onPrivMsg(privMsgObj: PrivMsgObj): void {
+    private onPrivMsg(privMsgObj: PrivMsgObj): void {
         const channel = this.channels.find((c) => c.name.toLowerCase() === privMsgObj.target.toLowerCase());
         if (channel) {
             if (channel.blowfish) {
