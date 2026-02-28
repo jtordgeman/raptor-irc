@@ -111,6 +111,7 @@ export class Raptor {
     private resetPingWatchdog(): void {
         this.clearPingWatchdog();
         const timeout = this.options.pingTimeout ?? DEFAULT_PING_TIMEOUT;
+        if (timeout === 0) return;
         this.pingWatchdog = setTimeout(() => {
             debug('Ping watchdog timeout — no PING received, forcing disconnect');
             this.networkManager.forceClose();
