@@ -148,7 +148,10 @@ export class NetworkManager {
             this.socket = net.connect(options.port, options.host);
         }
         this.socket.setEncoding('utf8');
-        this.socket.setTimeout(options.socketTimeout ?? DEFAULT_SOCKET_TIMEOUT);
+        const socketTimeout = options.socketTimeout ?? DEFAULT_SOCKET_TIMEOUT;
+        if (socketTimeout > 0) {
+            this.socket.setTimeout(socketTimeout);
+        }
 
         // register events
         this.socket.on(socketConnectEvent, this.onSocketConnected);

@@ -1,6 +1,6 @@
 {
     "name": "raptor-irc",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "A tiny and fast IRC bots framework written in TypeScript",
     "type": "module",
     "main": "dist/Raptor.js",

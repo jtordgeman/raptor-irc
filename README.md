@@ -67,8 +67,8 @@ bot.connect();
 | `reconnect` | `boolean` | `true` | Auto-reconnect on disconnect |
 | `reconnectDelay` | `number` | `5000` | Base delay in ms before reconnecting |
 | `reconnectMaxRetries` | `number` | `10` | Max reconnection attempts before giving up |
-| `socketTimeout` | `number` | `300000` | Socket timeout in ms (5 minutes) |
-| `pingTimeout` | `number` | `240000` | Disconnect if no server PING in this time (4 minutes) |
+| `socketTimeout` | `number` | `300000` | Socket timeout in ms (5 minutes); set to `0` to disable |
+| `pingTimeout` | `number` | `240000` | Disconnect if no server PING in this time (ms); set to `0` to disable |
 
 ## Channels
 
@@ -136,7 +136,7 @@ Auto-reconnect is enabled by default. When the connection drops:
 4. After `reconnectMaxRetries` (default 10) failures, emits `reconnectFailed` and stops
 5. On successful reconnect, re-registers with the server and auto-rejoins all channels
 
-A ping watchdog also runs: if no PING is received from the server within `pingTimeout` (default 4 minutes), the connection is force-closed to trigger reconnection. This catches silent disconnects during netsplits.
+A ping watchdog also runs: if no PING is received from the server within `pingTimeout` (default `240000` ms / 4 minutes), the connection is force-closed to trigger reconnection. This catches silent disconnects during netsplits. Set `pingTimeout: 0` to disable the watchdog entirely.
 
 To disable auto-reconnect:
 
